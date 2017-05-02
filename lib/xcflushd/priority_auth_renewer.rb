@@ -195,9 +195,12 @@ module Xcflushd
       # incoming requests slow because tasks accumulate in the thread pool
       # waiting.
       publish_failures = 0
+      successful = false
       PUBLISH_WAIT_TIMES.each do |wait_time|
         begin
           publish_auth(combination, authorization)
+          successful = true
+          break
         rescue
           publish_failures += 1
         end
@@ -206,7 +209,7 @@ module Xcflushd
 
       if publish_failures > 0
         logger.warn('There was an error while publishing a response in the '\
-                    "priority channel. Combination: #{combination}".freeze)
+                    "priority channel. Combination: #{combination} - Status: #{successful ? 'successfully published'.freeze : 'could not publish'.freeze}")
       end
     end
 
